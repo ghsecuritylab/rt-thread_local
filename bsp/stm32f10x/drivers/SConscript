@@ -1,0 +1,76 @@
+Import('RTT_ROOT')
+Import('rtconfig')
+from building import *
+
+cwd     = os.path.join(str(Dir('#')), 'drivers')
+
+path = [cwd, 
+cwd + '/lcd']
+
+# add the general drivers.
+src = Split("""
+board.c
+stm32f10x_it.c
+usart.c
+adxl345.c
+lcd/lcd.c
+""")
+
+if GetDepend(['RT_USING_LED']):
+    src += ['led.c']
+	
+if GetDepend(['RT_USING_KEY']):
+    src += ['key.c']
+	
+if GetDepend(['RT_USING_BEEP']):
+    src += ['beep.c', 'decode.c']
+	
+if GetDepend(['RT_USING_PIN']):
+    src += ['drv_gpio.c']
+
+if GetDepend(['BSP_USING_I2C']):
+    src += ['drv_i2c.c']
+	
+if GetDepend(['BSP_USING_SPI_IO']):
+    src += ['drv_spi.c']
+
+if GetDepend(['RT_USING_PWM']):
+    src += ['drv_pwm.c']
+	
+#if GetDepend(['BSP_USING_LCD']):
+#    src += ['drv_lcd.c']
+	
+# add canbus driver.
+if GetDepend('RT_USING_CAN'):
+    src += ['bxcan.c']
+
+# add Ethernet drivers.
+if GetDepend('RT_USING_DM9000'):
+    src += ['dm9000a.c']
+
+# add Ethernet drivers.
+if GetDepend('RT_USING_DFS'):
+    src += ['sdcard.c']
+
+# add Ethernet drivers.
+if GetDepend('RT_USING_RTC'):
+    src += ['stm32f1_rtc.c']
+
+if GetDepend(['BSP_USING_SPI']):
+    src += ['stm32f1_spi.c']
+	
+# add Ethernet drivers.
+#if GetDepend('PKG_USING_GUIENGINE'):
+#    src += ['touch.c']
+#    if rtconfig.RT_USING_LCD_TYPE == 'ILI932X':
+#        src += ['ili_lcd_general.c']
+#    elif rtconfig.RT_USING_LCD_TYPE == 'SSD1289':
+#        src += ['ssd1289.c']
+
+# add wdt driver.
+if GetDepend('RT_USING_WDT'):
+    src += ['stm32f1_wdg.c']
+	
+group = DefineGroup('Drivers', src, depend = [''], CPPPATH = path)
+
+Return('group')

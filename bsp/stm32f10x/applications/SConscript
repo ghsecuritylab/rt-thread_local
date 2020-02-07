@@ -1,0 +1,25 @@
+Import('RTT_ROOT')
+Import('rtconfig')
+from building import *
+
+cwd = os.path.join(str(Dir('#')), 'applications')
+
+src = Split("""
+application.c
+startup.c
+""")
+
+if GetDepend('RT_USING_CAN'):
+    src += ['canapp.c']
+
+if GetDepend('RT_USING_UART2'):
+    src += ['usart2.c']
+	
+if GetDepend('RT_USING_ENC28J60'):
+    src += ['drv_enc28j60.c', 'tcp_client.c']
+	
+CPPPATH = [cwd, str(Dir('#'))]
+
+group = DefineGroup('Applications', src, depend = [''], CPPPATH = CPPPATH)
+
+Return('group')
